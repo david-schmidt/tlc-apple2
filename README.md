@@ -12,7 +12,7 @@ The problem is that I/O is pretty difficult.  No one with one of these
 machines has come forward with the ability to get anything into or out of the
 existing serial port.
 
-The goal: get the ROM data of the TLC out of the machine.  Hard to do with funcitonal I/O.
+The goal: get the ROM data of the TLC out of the machine.  Hard to do with functional I/O.
 
 ### Audio to the rescue
 
