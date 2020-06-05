@@ -12,7 +12,7 @@ The problem is that I/O is pretty difficult.  No one with one of these
 machines has come forward with the ability to get anything into or out of the
 existing serial port.
 
-The goal: get the ROM data of the TLC out of the machine.  Hard to do with functional I/O.
+The goal: get the ROM data of the TLC out of the machine.  Hard to do without functional I/O.
 
 ### Audio to the rescue
 
@@ -41,4 +41,4 @@ gymnastics of the IIe and beyond that moved Heaven and Earth to keep the entry p
  * Run that audio through CiderPress, which knows how to take tape audio and reconstruct data from it
  * Profit
 
-The source code to do these activities is in the `src` directory, and the resulting ROM from the Tiger Learning computer is in the `rom` directory.
+The source code to do these activities is in the `src` directory, and the resulting ROM from the Tiger Learning computer is in the `rom` directory.  A few pictures of the machine and its on-screen interface are in `doc/images`.
