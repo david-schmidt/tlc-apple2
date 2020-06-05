@@ -39,6 +39,7 @@ gymnastics of the IIe and beyond that moved Heaven and Earth to keep the entry p
  * Type that code into the TLC's RAM and run it, dumping all non-banked ROM (`$C100-$FFFF`)
  * Capture the audio on a modern computer
  * Run that audio through CiderPress, which knows how to take tape audio and reconstruct data from it
+ * ???
  * Profit
 
 The source code to do these activities is in the `src` directory, and the resulting ROM from the Tiger Learning computer is in the `rom` directory.  A few pictures of the machine and its on-screen interface are in `doc/images`.
