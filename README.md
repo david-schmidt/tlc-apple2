@@ -37,7 +37,7 @@ gymnastics of the IIe and beyond that moved Heaven and Earth to keep the entry p
  * Change cassette output (`$C020`) to speaker output (`$C030`)
  * Assemble and get a raw hex dump of that code
  * Type that code into the TLC's RAM and run it, dumping all non-banked ROM (`$C100-$FFFF`)
- * Capture the audio on a modern computer
+ * Capture the audio on a modern computer (Windows hint: run `soundrecorder /file path\to\filename.wav` to get a `.wav`, not a `.wma`)
  * Run that audio through CiderPress, which knows how to take tape audio and reconstruct data from it
  * ???
  * Profit
