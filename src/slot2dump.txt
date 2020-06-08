@@ -1,7 +1,7 @@
 This is the part you get to type in by hand if you
 have no other way to communicate to a machine.  
 This version swaps in slot 2 and dumps memory from
-$C200-$CFFF.
+$C800-$CFFF.
 
 When the sound output is complete, a "Z" will be 
 printed and you'll be back at the prompt.  (The
