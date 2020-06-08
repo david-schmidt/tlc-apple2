@@ -46,8 +46,8 @@ The source code to do these activities is in the `src` directory, and the result
 
 #### ROM contents
 
-The files [`C100.FFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100.FFFF.bin)
-and [`C100.FFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100.FFFF.txt)
+The files [`C100-FFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100-FFFF.bin)
+and [`C100-FFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100-FFFF.txt)
 are binary and monitor dumps respectively of the ROM as seen normally (i.e. with no banking).
 The files [`C800-CFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C800-CFFF.bin)
 and [`C800-CFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C800-CFFF.txt)
