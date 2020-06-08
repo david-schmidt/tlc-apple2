@@ -1,0 +1,18 @@
+This is the part you get to type in by hand if you
+have no other way to communicate to a machine.  
+This version swaps in slot 2 and dumps memory from
+$C200-$CFFF.
+
+When the sound output is complete, a "Z" will be 
+printed and you'll be back at the prompt.  (The
+original monitor code would print a Ctrl-G (beep),
+which is not desirable now.)
+
+300:A9 00 A0 C8 85 3C 84 3D A9 FF A0 CF 85 3E 84 3F 
+310:AD FF CF AD 00 C2 20 4C 03 60 A5 3C C5 3E A5 3D 
+320:E5 3F E6 3C D0 02 E6 3D 60 A0 4B 20 3B 03 D0 F9 
+330:69 FE B0 F5 A0 21 20 3B 03 C8 C8 88 D0 FD 90 05
+340:A0 32 88 D0 FD AC 30 C0 A0 2C CA 60 A9 40 20 29 
+350:03 A0 27 A2 00 41 3C 48 A1 3C 20 6C 03 20 1A 03 
+360:A0 1D 68 90 EE A0 22 20 6C 03 F0 09 A2 10 0A 20 
+370:36 03 D0 FA 60 A9 DA 4C ED FD

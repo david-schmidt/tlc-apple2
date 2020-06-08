@@ -1,2 +1,2 @@
-ca65 tapeout.asm -l tapeout.lst
+ca65 tapeout.asm --listing
 ld65 tapeout.o -o tapeout.bin -C tapeout.cfg

@@ -42,3 +42,12 @@ gymnastics of the IIe and beyond that moved Heaven and Earth to keep the entry p
  * Profit
 
 The source code to do these activities is in the `src` directory, and the resulting ROM from the Tiger Learning computer is in the `rom` directory.
+
+#### ROM contents
+
+The files [`C100.FFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100.FFFF.bin)
+and [`C100.FFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100.FFFF.txt)
+are binary and monitor dumps respectively of the ROM as seen normally (i.e. with no banking).
+The files [`C800-CFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C800-CFFF.bin)
+and [`C800-CFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C800-CFFF.txt)
+are the view of ROM in that region after swapping slot 2 in (i.e. `lda $cfff` and `lda $c200` just before dumping).

@@ -6,14 +6,20 @@
 
 .org $0300
 
+; Set up starting address ($C800)
         lda     #$00
-        ldy     #$03
+        ldy     #$c8
         sta     $3c
         sty     $3d
-        lda     #$00
-        ldy     #$04
+; Set up ending addresses ($CFFF)
+        lda     #$ff
+        ldy     #$cf
         sta     $3e
         sty     $3f
+; Swap in slot 2
+        lda     $cfff
+        lda     $c200
+; Dump it to speaker
         jsr     WRITE
         rts
 
