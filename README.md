@@ -46,9 +46,17 @@ The source code to do these activities is in the `src` directory, and the result
 
 #### ROM contents
 
-The files [`C100-FFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100-FFFF.bin)
-and [`C100-FFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100-FFFF.txt)
-are binary and monitor dumps respectively of the ROM as seen normally (i.e. with no banking).
-The files [`C800-CFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C800-CFFF.bin)
-and [`C800-CFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C800-CFFF.txt)
-are the view of ROM in that region after swapping slot 2 in (i.e. `lda $cfff` and `lda $c200` just before dumping).
+Nonbanked ROM dump is available in binary and in monitor ROM disassembly form:
+
+  * [`C100-FFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100-FFFF.bin) - Raw binary
+  * [`C100-FFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/C100-FFFF.txt) - Monitor disassembly
+
+Banked ROM exists in slots 2 and 3.  The contents have been dumped as follows:
+
+  Slot 2:
+  * [`S2-C800-CFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/S2-C800-CFFF.bin) - Raw binary
+  * [`S2-C800-CFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/S2-C800-CFFF.txt) - Monitor disassembly
+
+  Slot 3:
+  * [`S3-C800-CFFF.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/S3-C800-CFFF.bin) - Raw binary
+  * [`S3-C800-CFFF.txt`](https://github.com/david-schmidt/tlc-apple2/blob/master/rom/S3-C800-CFFF.txt) - Monitor disassembly
