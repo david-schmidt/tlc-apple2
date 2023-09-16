@@ -102,12 +102,12 @@ Bootstrapping the TLC follows the normal Apple II boot sequence and loads up `PR
  100  END
 ```
 
-#### LTWIN
-
 The command `LTWIN` is a command that Tiger inserted into the ProDOS external command list (clumsily) 
 that basically reboots the system so that you end up back at the graphical interface.
 
-The contents of `KERLT101` is dumped and the beginnings of a [6502bench SourceGen](https://github.com/fadden/6502bench/releases) project are here:
+#### KERLT101
+
+The contents of `KERLT101` has been dumped and the beginnings of a [6502bench SourceGen](https://github.com/fadden/6502bench/releases) project are here:
 
   * [`KERLT101.bin`](https://github.com/david-schmidt/tlc-apple2/blob/master/file/KERLT101.bin) - Raw binary
   * [`KERLT101.bin.dis65`](https://github.com/david-schmidt/tlc-apple2/blob/master/file/KERLT101.bin.dis65) - SourceGen disassembly project
