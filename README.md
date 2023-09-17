@@ -76,7 +76,7 @@ The contents of it are as follows:
  BASIC.SYSTEM   SYS      21   6-DEC-91 16:48   6-DEC-91 16:48    10240
  PRODOS         SYS      35   6-MAY-93 17:10   2-NOV-92 21:09    17128
  STARTUP        BAS       1  <NO DATE>        <NO DATE>            176
- KERLT101       BIN      50  11-JAN-96  9:18  11-JAN-96  9:18    24764 a=$1400
+ KERLT101       BIN      50  11-JAN-96  9:18  11-JAN-96  9:18    24764 A=$1400
 
 BLOCKS FREE:  14     BLOCKS USED:  114     TOTAL BLOCKS:  128
 ```
