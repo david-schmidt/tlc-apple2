@@ -23,57 +23,60 @@
         jsr     WRITE
         rts
 
-LFCBA:  lda     $3C
+NXTA1:  lda     $3C
         cmp     $3E
         lda     $3D
         sbc     $3F
         inc     $3C
-        bne     LFCC8
+        bne     MON_RTS4B
         inc     $3D
-LFCC8:  rts
+MON_RTS4B:
+        rts
 
 LEADER:
-LFCC9:  ldy     #$4B
-        jsr     LFCDB
-        bne     LFCC9
+HEADR:  ldy     #$4B
+        jsr     ZERODLY
+        bne     HEADR
         adc     #$FE
-        bcs     LFCC9
+        bcs     HEADR
         ldy     #$21
-LFCD6:  jsr     LFCDB
+WRBIT:  jsr     ZERODLY
         iny
         iny
-LFCDB:  dey
-        bne     LFCDB
-        bcc     LFCE5
+ZERODLY:
+        dey
+        bne     ZERODLY
+        bcc     WRTAPE
         ldy     #$32
-LFCE2:  dey
-        bne     LFCE2
-LFCE5:  ldy     $C030
+ONEDLY: dey
+        bne     ONEDLY
+WRTAPE: ldy     $C030
         ldy     #$2C
         dex
         rts
 
 WRITE:
         lda     #$40
-        jsr     LFCC9
+        jsr     HEADR
         ldy     #$27
-LFED4:  ldx     #$00
+WR1:    ldx     #$00
         eor     ($3C,x)
         pha
         lda     ($3C,x)
-        jsr     LFEED
-        jsr     LFCBA
+        jsr     WRBYTE
+        jsr     NXTA1
         ldy     #$1D
         pla
-        bcc     LFED4
+        bcc     WR1
         ldy     #$22
-        jsr     LFEED
-        beq     LFF3A
-LFEED:  ldx     #$10
-LFEEF:  asl     a
-        jsr     LFCD6
-        bne     LFEEF
+        jsr     WRBYTE
+        beq     FAKE_BELL
+WRBYTE: ldx     #$10
+WRBYT2: asl     a
+        jsr     WRBIT
+        bne     WRBYT2
         rts
 
-LFF3A:  lda     #$DA
+FAKE_BELL:
+        lda     #$DA
         jmp     $FDED
