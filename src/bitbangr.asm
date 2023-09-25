@@ -81,7 +81,8 @@ pull_byte:
 
 push_bit: ; We now have a bit in the carry
           dec bits      ; 6
-          beq :+        ; 2 (in the case we care about) Have we read all 8 bits?  Then this bit is the stop bit
+          beq byte_complete ; Have we read all 8 bits?  Then this bit is the stop bit; leave with carry set
+                        ; 2 (in the case we care about, i.e. more bits to read)
           lda ring      ; 4
           ror           ; 2
           sta ring      ; 4
@@ -96,8 +97,10 @@ push_bit: ; We now have a bit in the carry
           beq :+        ; 3
 :         nop           ; 2
           jmp pull_byte ; 3 Loop around for another bit - we burned $4C cycles
+;                         $6B
+byte_complete:
           ; Carry now holds stop bit (clear/0 indicates framing error, because we end with set/1)
-:         lda ring ; Exit with the assembled byte in A
+          lda ring      ; Exit with the assembled byte in A
           rts
 
 pb_state: .byte $00
