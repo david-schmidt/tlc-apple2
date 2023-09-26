@@ -31,12 +31,14 @@ start:
           jsr PRERR    ; Else we got a framing error
 
 printit:
-          pha
-          jsr CROUT
-          pla
-          jsr PRBYTE
-          jsr CROUT
-          jmp start
+          ora #$80
+          jsr COUT ; PRBYTE
+          lda $25
+          cmp #$17
+          bne start
+          lda #$00
+          sta $25
+          beq start
 done:     rts
 
 pb0_recv:
@@ -74,11 +76,9 @@ pull_byte:
 ; Approximately 106.6 ($6B) CPU cycles
           clc           ; 2
           lda PB0       ; 4
-          bmi :+        ; 2/3
+          bmi :+        ; 2 if positive, 3 if negative
           jmp push_bit  ; 3
 :         sec           ; 2 bit was low/negative
-; we are now one CPU cycle behind the high case; not going to bother making that up, I don't think
-
 push_bit: ; We now have a bit in the carry
           dec bits      ; 6
           beq byte_complete ; Have we read all 8 bits?  Then this bit is the stop bit; leave with carry set
@@ -86,17 +86,17 @@ push_bit: ; We now have a bit in the carry
           lda ring      ; 4
           ror           ; 2
           sta ring      ; 4
-;                       $1F cycles to get here
-; We are now done with processing that bit; we need to cool our heels for the rest ($6B - $1F = $4C) of the
+;                       $1C/$1D cycles to get here (since center of  bit time)
+; We are now done with processing that bit; we need to cool our heels for the rest ($6B - $1C = $4F) of the
 ; bit time in order to get into the middle of the next bit
-          ldx #$09      ; 2  loop count
+          ldx #$0A      ; 2  loop count
 :         nop           ; 2 \
           dex           ; 2  |-- 7 * loop count
           bne :-        ; 3 /  final exit of the loop adds 2, branch not taken
-;                       $44 cycles to get here
-          beq :+        ; 3
-:         nop           ; 2
-          jmp pull_byte ; 3 Loop around for another bit - we burned $4C cycles
+;                         $48 cycles to get here
+          nop           ; 2
+          nop           ; 2
+          jmp pull_byte ; 3 Loop around for another bit - we burned $4F cycles
 ;                         $6B
 byte_complete:
           ; Carry now holds stop bit (clear/0 indicates framing error, because we end with set/1)
