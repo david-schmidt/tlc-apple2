@@ -8,7 +8,7 @@ Connections
 -----------
 Switch is from collector to emitter, governed by base
 4401 Collector - DE9 pin 2 (+5v)
-4401 Emitter - DE9 pin 7 (PB0)
+4401 Emitter - DE9 pin 7 (PB0*)
 4401 Base - Level Shifter out
 
 Level Shifter GND - DE9 pin 3 (GND) and External Power ground
@@ -16,5 +16,7 @@ Level Shifter out - 4401 Base
 Level Shifter Vcc - (External Power)
 
 DE9 pin 3 (GND) - Level Shifter GND
-DE9 pin 7 (PB0) - 4402 Emitter
+DE9 pin 7 (PB0*) - 4402 Emitter
 DE9 pin 2 (+5v) - 4402 Collector
+
+* Consider using PB1 instead of PB0; PB0 held high is like holding down the open-apple key, turns ctrl-reset into ctrl-openapple-reset all the time
