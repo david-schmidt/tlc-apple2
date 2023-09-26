@@ -13,11 +13,13 @@ The problem is that I/O is pretty difficult.  No one with one of these
 machines has come forward with the ability to get anything into or out of the
 existing serial port.
 
-The goal: get data of the TLC out of the machine.  Hard to do without functional I/O.
+The goal: get data into and out of the TLC machine.  Hard to do without functional I/O.
 
-### Audio to the rescue
+### Audio and Joystick to the rescue
 
 One thing the TLC _does_ have is sound.  And a headphone jack.  So we have... output.
+Looming on the horizon is bit-banged serial data via the joystick port.  So we have...
+input.
 
 #### A long time ago...
 
