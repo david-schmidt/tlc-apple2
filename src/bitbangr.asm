@@ -22,17 +22,16 @@ PRERR     = $FF2D
 PB0       = $C061 ; Paddle 0 PushButton: HIGH/ON if > 127, LOW/OFF if < 128.
 
 start:
-          lda #$09 ; We'll be watching for 8 bits plus one stop bit
-          sta bits
-          clc
           jsr pb0_recv ; Pull a byte from PB0
           bcs printit  ; Carry set means we got a '1' stop bit, so we're good
           jsr CROUT
           jsr PRERR    ; Else we got a framing error
+          jsr CROUT
+          jmp start
 
 printit:
           ora #$80
-          jsr COUT ; PRBYTE
+          jsr COUT
           lda $25
           cmp #$17
           bne start
@@ -42,20 +41,22 @@ printit:
 done:     rts
 
 pb0_recv:
-
-; State is unknown
+; State is currently unknown
+          lda #$09     ; We'll be watching for 8 bits plus one stop bit
+          sta bits
+          clc
 
 poll_for_1:
-; sample state
+; Sample PB0's state
           lda PB0
-          bpl poll_for_1 ; if not negative, branch to wait_for_1
+          bpl poll_for_1 ; if not negative, branch to poll_for_1
 
 ; State is now 1
 
 poll_for_0:
-; sample state
+; Sample PB0's state
           lda PB0
-          bmi poll_for_0 ; if negative, branch to wait_for_0
+          bmi poll_for_0 ; if negative, branch to poll_for_0
 
 ; State just became 0 (start bit)
 
@@ -64,13 +65,13 @@ poll_for_0:
 ; When falling through to here, the above branch was not taken - consuming 2 cycles to get here
           ldx #$14      ; 2  loop count
 :         nop           ; 2 \
-          dex           ; 2  |-- 7 * loop count
+          dex           ; 2  |-- 7 * loop count - 1
           bne :-        ; 3 /  final exit of the loop adds 2, branch not taken
-;                       $90 cycles to get here; need to burn 7 more
-          beq :+        ; 3
-:         nop           ; 2
-          nop           ; 2
-;                       $97 cycles to get here; save 2 for upcoming clc
+;                       $8F cycles to get here
+          beq :+        ; 3 burn
+:         beq :+        ; 3 baby
+:         nop           ; 2 burn
+;                       $97 cycles to get here; final 2 will be consumed by clc below 
 pull_byte:
 ; We now have one bit time (104.2us at 9600 baud) to process this bit
 ; Approximately 106.6 ($6B) CPU cycles
@@ -86,23 +87,22 @@ push_bit: ; We now have a bit in the carry
           lda ring      ; 4
           ror           ; 2
           sta ring      ; 4
-;                       $1C/$1D cycles to get here (since center of  bit time)
-; We are now done with processing that bit; we need to cool our heels for the rest ($6B - $1C = $4F) of the
+;                       $1D cycles to get here (since center of bit time)
+; We are now done with processing that bit; we need to cool our heels for the rest ($6B - $1D = $4E) of the
 ; bit time in order to get into the middle of the next bit
           ldx #$0A      ; 2  loop count
 :         nop           ; 2 \
-          dex           ; 2  |-- 7 * loop count
+          dex           ; 2  |-- 7 * loop count - 1
           bne :-        ; 3 /  final exit of the loop adds 2, branch not taken
-;                         $48 cycles to get here
+;                         $47 cycles to get here, burn $07 more (includes our jump back to top of loop)
           nop           ; 2
           nop           ; 2
-          jmp pull_byte ; 3 Loop around for another bit - we burned $4F cycles
-;                         $6B
+          jmp pull_byte ; 3 Loop around for another bit - we burned $4E cycles
+;                         $6A
 byte_complete:
           ; Carry now holds stop bit (clear/0 indicates framing error, because we end with set/1)
           lda ring      ; Exit with the assembled byte in A
           rts
 
-pb_state: .byte $00
 ring:     .byte $55
 bits:     .byte $00
