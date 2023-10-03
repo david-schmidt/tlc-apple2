@@ -1,6 +1,6 @@
 ![MECC Grammar Gobble Picture Chompers Cartridge](/doc/images/MECCGrammarGobblePictureChompers.jpg)  
   MECC Grammar Gobble  
-  MECC Picture Chompers
+  ![MECC Picture Chompers](/file/K.CHOMP.dsk)
 
 ![MECC Invisible Bugs Sun and Seasons Cartridge](/doc/images/MECCGrammarGobblePictureChompers.jpg)  
   ![MECC Invisible Bugs](/file/INVISIBLE.BUGS.dsk)  
