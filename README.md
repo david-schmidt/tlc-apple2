@@ -1,7 +1,7 @@
 # tlc-apple2
 
 <!-- ![Image of the TLC](https://github.com/david-schmidt/tlc-apple2/blob/master/doc/images/01TLC.png) -->
-![01TLC](https://github.com/david-schmidt/tlc-apple2/assets/1110325/4a64e671-c666-486f-90c6-6b0d4c48696d)
+![04TLCOpen2](/doc/images/04TLCOpen2.jpg)
 
 Some bits and bobs regarding the Tiger Learning Computer.
 The TLC was a "toy" computer that had an Apple IIe at its core.
