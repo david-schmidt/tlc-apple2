@@ -1,6 +1,8 @@
 ;
-; Bitbang RS-232 (using a pushbutton input in our case)
+; Tiger Learning Computer Joystick serial bitbanger (using a pushbutton input in our case)
 ;
+; Custom serial-to-joystick cable is required.  RS-232 settings are 9600 bps,
+; no parity, 8 data bits, 1 stop bit; 1ms pacing seems to be required.
 
 ;
 ; CPU cycle counting must be done to meet bit-time requirements on the wire.
@@ -10,7 +12,7 @@
 ; microseconds long.
 ;
 
-.org $300 ; For now
+.org $300
 
 ; Some system constants
 WAIT      = $FCA8
@@ -42,7 +44,7 @@ done:     rts
 
 pb0_recv:
 ; State is currently unknown
-          lda #$09     ; We'll be watching for 8 bits plus one stop bit
+          lda #$09      ; We'll be watching for 8 bits plus one stop bit
           sta bits
           clc
 
@@ -58,23 +60,20 @@ poll_for_0:
           lda PB0
           bmi poll_for_0 ; if negative, branch to poll_for_0
 
-; State just became 0 (start bit)
+; State just became 0 (start bit) sometime in the last 4 or so clock cycles
 
-; Wait 1.5 bit times (104.2 + 52.1 = 156.3us at 9600 baud) to get into the middle of the first bit
+; Wait 1.5 bit times (104.2 + 52.1 = 156.3us at 9600 bps) to get into the middle of the first bit
 ; Approximately 152.8 ($99) CPU cycles
 ; When falling through to here, the above branch was not taken - consuming 2 cycles to get here
-          ldx #$14      ; 2  loop count
-:         nop           ; 2 \
-          dex           ; 2  |-- 7 * loop count - 1
-          bne :-        ; 3 /  final exit of the loop adds 2, branch not taken
-;                       $8F cycles to get here
-          beq :+        ; 3 burn
-:         beq :+        ; 3 baby
-:         nop           ; 2 burn
+          ldx #$1D      ; 2  loop count
+:         dex           ; 2 \  = 5 * loop count - 1
+          bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
+;                       $94 cycles to get here
+          bit $00       ; 3 don't care about results
 ;                       $97 cycles to get here; final 2 will be consumed by clc below 
 pull_byte:
-; We now have one bit time (104.2us at 9600 baud) to process this bit
-; Approximately 106.6 ($6B) CPU cycles
+; We now have one bit time (104.2us at 9600 bps) to process this bit
+; Approximately 101.8 ($66) CPU cycles
           clc           ; 2
           lda PB0       ; 4
           bmi :+        ; 2 if positive, 3 if negative
@@ -88,17 +87,14 @@ push_bit: ; We now have a bit in the carry
           ror           ; 2
           sta ring      ; 4
 ;                       $1D cycles to get here (since center of bit time)
-; We are now done with processing that bit; we need to cool our heels for the rest ($6B - $1D = $4E) of the
+; We are now done with processing that bit; we need to cool our heels for the rest ($66 - $1D = $49) of the
 ; bit time in order to get into the middle of the next bit
-          ldx #$0A      ; 2  loop count
-:         nop           ; 2 \
-          dex           ; 2  |-- 7 * loop count - 1
-          bne :-        ; 3 /  final exit of the loop adds 2, branch not taken
-;                         $47 cycles to get here, burn $07 more (includes our jump back to top of loop)
-          nop           ; 2
-          nop           ; 2
-          jmp pull_byte ; 3 Loop around for another bit - we burned $4E cycles
-;                         $6A
+          ldx #$0E      ; 2  loop count
+:         dex           ; 2 \  = 5 * loop count - 1
+          bne :-        ; 3 /  final exit of the loop only adds 2, branch not taken
+;                       $47 cycles to get here
+          jmp pull_byte ; 3 Loop around for another bit - we actually burn $4A cycles
+;                       $67
 byte_complete:
           ; Carry now holds stop bit (clear/0 indicates framing error, because we end with set/1)
           lda ring      ; Exit with the assembled byte in A
