@@ -1,0 +1,373 @@
+D000 D8                                      CLD
+D001 20 BE D6                                JSR     reset_phases
+D004 BD 8E C0                                LDA     $C08E,X
+D007 EA                                      NOP
+D008 EA                                      NOP
+D009 20 D0 D6                                JSR     check_request
+D00C B0 26                                   BCS     IO_error
+D00E A0 05                                   LDY     #5
+D010
+D010                         loc_D010:
+D010 0A                                      ASL     A
+D011 2E 56 D3                                ROL     block_high
+D014 88                                      DEY
+D015 D0 F9                                   BNE     loc_D010
+D017 0A                                      ASL     A
+D018 90 02                                   BCC     loc_D01C
+D01A 09 10                                   ORA     #$10
+D01C
+D01C                         loc_D01C:
+D01C 4A                                      LSR     A
+D01D 4A                                      LSR     A
+D01E 4A                                      LSR     A
+D01F 4A                                      LSR     A
+D020 48                                      PHA
+D021 20 38 D0                                JSR     process_request
+D024 68                                      PLA
+D025 B0 09                                   BCS     loc_D030
+D027 E6 45                                   INC     $45
+D029 69 02                                   ADC     #2
+D02B 20 38 D0                                JSR     process_request
+D02E C6 45                                   DEC     $45
+D030
+D030                         loc_D030:
+D030 AD 58 D3                                LDA     error_code
+D033 60                                      RTS
+
+IO_error:
+D034 A9 27                                   LDA     #$27
+D036 38                                      SEC
+D037 60                                      RTS
+
+process_request:
+D038 A0 01                                   LDY     #1
+D03A 8C 6A D3                                STY     byte_D36A
+D03D 8D 57 D3                                STA     req_sector
+D040 A5 43                                   LDA     $43
+D042 29 70                                   AND     #$70
+D044 85 3E                                   STA     $3E
+D046 20 9B D6                                JSR     locret_D69B
+D049 20 DA D4                                JSR     check_spinning
+D04C 08                                      PHP
+D04D A9 E8                                   LDA     #$E8
+D04F 8D 70 D3                                STA     byte_D370
+D052 A5 43                                   LDA     $43
+D054 CD 59 D3                                CMP     slot
+D057 8D 59 D3                                STA     slot
+D05A 08                                      PHP
+D05B 0A                                      ASL     A
+D05C BD 89 C0                                LDA     $C089,X ;turn on drive
+D05F 90 01                                   BCC     loc_D062
+D061 E8                                      INX
+D062
+D062                         loc_D062:
+D062 BD 8A C0                                LDA     $C08A,X ;select drive
+D065 28                                      PLP
+D066 F0 0A                                   BEQ     loc_D072 ;same slot
+D068 28                                      PLP ;discard spinning result
+D069 A9 00                                   LDA     #0
+D06B F0 04                                   BEQ     loc_D071
+D06D 20 85 D3                                JSR     delay
+D070 88                                      DEY
+D071
+D071                         loc_D071:
+D071 08                                      PHP
+D072
+D072                         loc_D072:
+D072 A5 42                                   LDA     $42
+D074 F0 06                                   BEQ     loc_D07C ;status
+D076 AD 56 D3                                LDA     block_high
+D079 20 0C D1                                JSR     seek ;"seek"
+D07C
+D07C                         loc_D07C:
+D07C 28                                      PLP
+D07D D0 0F                                   BNE     loc_D08E
+D07F F0 0D                                   BEQ     loc_D08E
+
+D08E                         loc_D08E:
+D08E A5 42                                   LDA     $42
+D090 F0 6B                                   BEQ     loc_D0FD
+D092 4A                                      LSR     A
+D093 B0 03                                   BCS     loc_D098
+D095 20 F0 D5                                JSR     locret_D5F0
+D098
+D098                         loc_D098:
+D098 A0 40                                   LDY     #$40
+D09A 8C 69 D3                                STY     retry_low
+D09D
+D09D                         loc_D09D:
+D09D A6 3E                                   LDX     $3E
+D09F 20 98 D3                                JSR     dummy2
+D0A2 90 17                                   BCC     loc_D0BB ;always
+
+D0BB                         loc_D0BB:
+D0BB AC 6F D3                                LDY     req_track
+D0BE CC 5A D3                                CPY     cur_track
+D0C1 F0 12                                   BEQ     loc_D0D5
+D0C3 20 46 D1                                JSR     sub_D146
+D0C6 4C D5 D0                                JMP     loc_D0D5
+
+D0D5                         loc_D0D5:
+D0D5 AD 57 D3                                LDA     req_sector
+D0D8 CD 6E D3                                CMP     cur_sector
+D0DB D0 EF                                   BNE     loc_D0CC
+D0DD
+D0DD                         loc_D0DD:
+D0DD A5 42                                   LDA     $42
+D0DF 4A                                      LSR     A
+D0E0 90 12                                   BCC     loc_D0F4
+D0E2 20 FD D3                                JSR     read_sector
+D0E5 B0 BD                                   BCS     loc_D0A4
+D0E7
+D0E7                         loc_D0E7:
+D0E7 A9 00                                   LDA     #0
+D0E9 D0                                      .BYTE $D0
+D0EA
+D0EA                         loc_D0EA:
+D0EA 38                                      SEC
+D0EB 8D 58 D3                                STA     error_code
+D0EE A6 3E                                   LDX     $3E
+D0F0 BD 88 C0                                LDA     $C088,X
+D0F3 60                                      RTS
+D0F4
+D0F4                         loc_D0F4:
+D0F4 20 00 D5                                JSR     write_sector
+D0F7
+D0F7                         loc_D0F7:
+D0F7 90 EE                                   BCC     loc_D0E7
+D0F9 A9 2B                                   LDA     #$2B
+D0FB D0 ED                                   BNE     loc_D0EA
+D0FD
+D0FD                         loc_D0FD:
+D0FD A6 3E                                   LDX     $3E
+D0FF BD 8D C0                                LDA     $C08D,X
+D102 BD 8E C0                                LDA     $C08E,X
+D105 2A                                      ROL     A
+D106 BD 8C C0                                LDA     $C08C,X
+D109 4C F7 D0                                JMP     loc_D0F7
+
+seek:
+D10C 0A                                      ASL     A
+D10D 8D 6F D3                                STA     req_track
+D110 20 25 D1                                JSR     select_phase
+D113 20 F1 D4                                JSR     slot_to_device
+D116 BD 59 D3                                LDA     slot,X
+D119 8D 5A D3                                STA     cur_track
+D11C AD 6F D3                                LDA     req_track
+D11F 9D 59 D3                                STA     slot,X
+D122
+D122                         loc_D122:
+D122 20 33 D1                                JSR     sub_D133
+
+select_phase:
+D125 A0 03                                   LDY     #3
+D127
+D127                         loc_D127:
+D127 98                                      TYA
+D128 20 8A D1                                JSR     dummy
+D12B 88                                      DEY
+D12C 10 F9                                   BPL     loc_D127
+D12E 4E 5A D3                                LSR     cur_track
+D131 18                                      CLC
+D132 60                                      RTS
+D133
+D133                         sub_D133:
+D133 8D 72 D3                                STA     byte_D372
+D136 8D 5A D3                                STA     cur_track
+D139 4A                                      LSR     A
+D13A 8D 6F D3                                STA     req_track
+D13D A2 00                                   LDX     #0
+D13F 8E 6E D3                                STX     cur_sector
+D142 A6 3E                                   LDX     $3E
+D144 D0 06                                   BNE     loc_D14C
+D146
+D146                         sub_D146:
+D146 AD 5A D3                                LDA     cur_track
+D149 8D 6F D3                                STA     req_track
+D14C
+D14C                         loc_D14C:
+D14D 4A                                      LSR     A
+D14E 4A                                      LSR     A
+D14F 4A                                      LSR     A
+D150 9D 82 C0                                STA     $C082,X
+D153 AD 6E D3                                LDA     cur_sector
+D156 29 0F                                   AND     #$F
+D158 8D 6E D3                                STA     cur_sector
+D15B AD 6F D3                                LDA     req_track
+D15E 0A                                      ASL     A
+D15F 0A                                      ASL     A
+D160 0A                                      ASL     A
+D161 0A                                      ASL     A
+D162 0D 6E D3                                ORA     cur_sector
+D165 9D 81 C0                                STA     $C081,X
+D168 A9 00                                   LDA     #0
+D16A 9D 80 C0                                STA     $C080,X
+D16D 9D 83 C0                                STA     $C083,X
+D170 60                                      RTS
+
+dummy:
+D18A A6 3E                                   LDX     $3E
+D18C 60                                      RTS
+
+block_high:
+D356 00                      byte_D356:      .BYTE 0
+
+req_sector:
+D357 00                      byte_D357:      .BYTE 0
+
+error_code:
+D358 00                      byte_D358:      .BYTE 0
+
+slot:
+D359 00                      byte_D359:      .BYTE 0
+
+cur_track:
+D35A 00                      byte_D35A:      .BYTE 0
+
+retry_low:
+D369 00                      byte_D369:      .BYTE 0
+
+retry_high:
+D36A 00                      byte_D36A:      .BYTE 0
+D36B 00                      byte_D36B:      .BYTE 0
+
+cur_sector:
+D36E 00                      byte_D36E:      .BYTE 0
+
+req_track:
+D36F 00                      byte_D36F:      .BYTE 0
+
+D370 00                      byte_D370:      .BYTE 0
+
+D372 00 01 30 28 24 20 1E 1D+byte_D372:      .BYTE 0, 1, $30, $28, $24, $20, $1E, $1D, $1C, $1C, $70, $2C, $26, $22, $1F, $1E, $1D
+D372 1C 1C 70 2C 26 22 1F 1E+
+D372 1D 1C 1C                                .BYTE $1C, $1C
+
+delay:
+D385 A2 11                                   LDX     #$11
+D387
+D387                         loc_D387:
+D387 CA                                      DEX
+D388 D0 FD                                   BNE     loc_D387
+D38A EE 6F D3                                INC     byte_D36F
+D38D D0 03                                   BNE     loc_D392
+D38F EE 70 D3                                INC     byte_D370
+D392
+D392                         loc_D392:
+D392 38                                      SEC
+D393 E9 01                                   SBC     #1
+D395 D0 EE                                   BNE     loc_D385
+D397 60                                      RTS
+
+dummy2:
+D398 18                                      CLC
+D399 60                                      RTS
+
+read_sector:
+D3FD A0 00                                   LDY     #0
+D3FF
+D3FF                         loc_D3FF:
+D3FF BD 8C C0                                LDA     $C08C,X
+D402 91 44                                   STA     ($44),Y
+D404 C8                                      INY
+D405 D0 F8                                   BNE     loc_D3FF
+D407 18                                      CLC
+D408 60                                      RTS
+
+check_spinning:
+D4DA A6 3E                                   LDX     $3E
+D4DC A0 00                                   LDY     #0
+D4DE
+D4DE                         loc_D4DE:
+D4DE BD 8C C0                                LDA     $C08C,X
+D4E1 20 F0 D4                                JSR     nullsub_4
+D4E4 48                                      PHA
+D4E5 68                                      PLA
+D4E6 DD 8C C0                                CMP     $C08C,X
+D4E9 D0 05                                   BNE     nullsub_4
+D4EB A9 28                                   LDA     #$28
+D4ED 88                                      DEY
+D4EE D0 EE                                   BNE     loc_D4DE
+D4F0
+D4F0                         nullsub_4:
+D4F0 60                                      RTS
+
+slot_to_device:
+D4F1 48                                      PHA
+D4F2 A5 43                                   LDA     $43
+D4F4 4A                                      LSR     A
+D4F5 4A                                      LSR     A
+D4F6 4A                                      LSR     A
+D4F7 4A                                      LSR     A
+D4F8 C9 08                                   CMP     #8
+D4FA 29 07                                   AND     #7
+D4FC 2A                                      ROL     A
+D4FD AA                                      TAX
+D4FE 68                                      PLA
+D4FF 60                                      RTS
+
+write_sector:
+D500 38                                      SEC
+D501 EA                                      NOP
+D502 EA                                      NOP
+D503 EA                                      NOP
+D504 BD 8E C0                                LDA     $C08E,X
+D507 10 03                                   BPL     loc_D50C
+D509 4C DF D5                                JMP     loc_D5DF
+D50C
+D50C                         loc_D50C:
+D50C BD 8F C0                                LDA     $C08F,X
+D50F A0 00                                   LDY     #0
+D511
+D511                         loc_D511:
+D511 B1 44                                   LDA     ($44),Y
+D513 9D 8D C0                                STA     $C08D,X
+D516 BD 8C C0                                LDA     $C08C,X
+D519 C8                                      INY
+D51A D0 F5                                   BNE     loc_D511
+D51C BD 8E C0                                LDA     $C08E,X
+D51F 18                                      CLC
+D520 60                                      RTS
+
+D5DF
+D5DF                         loc_D5DF:
+D5DF BD 8E C0                                LDA     $C08E,X
+D5E2 EA                                      NOP
+D5E3 EA                                      NOP
+D5E4 EA                                      NOP
+D5E5 60                                      RTS
+
+D5F0                         locret_D5F0:
+D5F0 60                                      RTS
+
+D69B                         locret_D69B:
+D69B 60                                      RTS
+
+reset_phases:
+D6BE A5 43                                   LDA     $43
+D6C0 29 7F                                   AND     #$7F
+D6C2 AA                                      TAX
+D6C3 BD 80 C0                                LDA     $C080,X
+D6C6 BD 82 C0                                LDA     $C082,X
+D6C9 BD 84 C0                                LDA     $C084,X
+D6CC BD 86 C0                                LDA     $C086,X
+D6CF 60                                      RTS
+
+check_request:
+D6D0 A5 42                                   LDA     $42
+D6D2 C9 04                                   CMP     #4
+D6D4 B0 10                                   BCS     loc_D6E6
+D6D6 A5 46                                   LDA     $46
+D6D8 A6 47                                   LDX     $47
+D6DA 8E 56 D3                                STX     block_high
+D6DD F0 09                                   BEQ     loc_D6E8
+D6DF CA                                      DEX
+D6E0 18                                      CLC
+D6E1 60                                      RTS
+
+D6E6                         loc_D6E6:
+D6E6 38                                      SEC
+D6E7 60                                      RTS
+D6E8                         loc_D6E8:
+D6E8 18                                      CLC
+D6E9 60                                      RTS
